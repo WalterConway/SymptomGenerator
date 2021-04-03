@@ -27,7 +27,9 @@ public class MainApplication {
 	public static RandomMapper rm = new RandomMapper(); 
 	public static void main(String[] args) {
 
-		int samplesPerTypeToGenerate = 100000;
+		int samplesPerTypeToGenerate = 25000;
+		int stallCount = 500000; 
+		
 		DataRepository repo = new DataRepository();
 		Outcome.setSymptomTypeOrder(Arrays.asList(SymptomType.values()));
 		List<Type> profiles = new ArrayList<Type>();
@@ -37,9 +39,10 @@ public class MainApplication {
 		profiles.add(getColdProfile());
 		System.out.println("size:" +profiles.size());
 		for(Type profile : profiles) {
-			int currentSampleCount =0;
+			int currentSampleCount = 0;
+			int currentStallCount = 0;
 
-			while(currentSampleCount < samplesPerTypeToGenerate) {
+			while((currentStallCount < stallCount) && (currentSampleCount < samplesPerTypeToGenerate)) {
 
 				Outcome o = new Outcome();
 				o.setType(profile);
@@ -77,9 +80,25 @@ public class MainApplication {
 					}
 				}
 
-				repo.addOutCome(o);
-				currentSampleCount++;
+				if(repo.addOutCome(o)){
+					currentSampleCount++;
+					if((currentSampleCount % 1000) == 0) {
+						System.out.println("SampleCount: "+currentSampleCount + " TYPE " + o.getType().getName());
+					}
+					currentStallCount = 0;
+				} else {
+					currentStallCount++;
+					if((currentStallCount % 1000) == 0) {
+						System.out.println("StallCount: "+currentStallCount + " TYPE " + o.getType().getName());
+					}
+				}
 			}
+			System.out.println("=========================================");
+			System.out.println("=========================================");
+			System.out.println(" Final Count: " + currentSampleCount + "type: " +profile.getName().toString() );
+			System.out.println("=========================================");
+			System.out.println("=========================================");
+			
 		}
 
 
@@ -136,6 +155,9 @@ public class MainApplication {
 
 		Symptom lossOfTaste = new Symptom(SymptomType.LOSS_OF_TASTE,USUALLY,ALL);
 		Symptom lossOfSmell = new Symptom(SymptomType.LOSS_OF_SMELL,USUALLY,ALL);
+		
+		Symptom shortnessOfBreath = new Symptom(SymptomType.SHORTNESS_OF_BREATH,USUALLY,ALL);
+		Symptom difficultyBreathing = new Symptom(SymptomType.DIFFICULTY_BREATHING,USUALLY,ALL);
 
 		Symptom.addSymptomExclusion(lossOfTaste, runnyNose);
 		Symptom.addSymptomExclusion(lossOfTaste, stuffyNose);
@@ -155,6 +177,8 @@ public class MainApplication {
 		covid.addSymptom(vomiting);
 		covid.addSymptom(lossOfTaste);
 		covid.addSymptom(lossOfSmell);
+		covid.addSymptom(shortnessOfBreath);
+		covid.addSymptom(difficultyBreathing);
 
 		return covid;
 	}
@@ -175,6 +199,10 @@ public class MainApplication {
 
 		Symptom lossOfTaste = new Symptom(SymptomType.LOSS_OF_TASTE,RARELY,ALL);
 		Symptom lossOfSmell = new Symptom(SymptomType.LOSS_OF_SMELL,RARELY,ALL);
+		
+
+		Symptom shortnessOfBreath = new Symptom(SymptomType.SHORTNESS_OF_BREATH,USUALLY,ALL);
+		Symptom difficultyBreathing = new Symptom(SymptomType.DIFFICULTY_BREATHING,USUALLY,ALL);
 
 		flu.addSymptom(cough);
 		flu.addSymptom(muscleAches);
@@ -189,6 +217,8 @@ public class MainApplication {
 		flu.addSymptom(vomiting);
 		flu.addSymptom(lossOfTaste);
 		flu.addSymptom(lossOfSmell);
+		flu.addSymptom(shortnessOfBreath);
+		flu.addSymptom(difficultyBreathing);
 
 		return flu;
 	}
