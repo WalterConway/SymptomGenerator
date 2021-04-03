@@ -114,7 +114,7 @@ public class MainApplication {
 		for(SymptomType st : types) {
 			sb.append(st.toString()).append(",");
 		}
-		sb.deleteCharAt(sb.length()-1);
+		sb.append("TYPE");
 		
 		return sb.toString();
 	}
